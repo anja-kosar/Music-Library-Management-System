@@ -14,15 +14,28 @@ cursor = conn.cursor()
 
 # Below is a function to authenticate user based on the provided username and password
 # The function will query the users table in the database to retrieve the stored hash, salt, and role for the provided username
-def authenticate_user(username, password):
+def get_user_credentials(username):
     cursor.execute('SELECT password_hash, salt, role FROM users WHERE username = ?', (username,))
-    user = cursor.fetchone()
+    return cursor.fetchone()
+
+# Below will hash the password for security purposes
+def hash_password(password, salt):
+    return hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+
+# Below will authenticate the user based on the username and password entered
+def authenticate_user(username, password):
+    user = get_user_credentials(username)
+
+# If the user is in the database, the password will be hashed  
+# The hashed password will be compared with the stored hash in the database
     if user:
         stored_hash, salt, role = user
-        # Compare the stored hash with the hash of the provided password
-        test_hash = hashlib.pbkdf2_hmac('sha256', password.encode(), salt, 100000)
+        test_hash = hash_password(password, salt) 
+
+# If the hashed password matches the stored hash, the user will be authenticated and granted access to the library                                                     
         if test_hash == stored_hash:
-            return role  # Return the role of the user if authentication succeeds
+            return role                           
+    
     return None
 
 # Below is a function to view lyrics from the lyrics table in the database
@@ -46,12 +59,9 @@ def view_lyrics():
 def view_music_scores():
     conn = sqlite3.connect('music_library.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM music_scores')
-    rows = cursor.fetchall()
-    conn.close()
-    
-    for row in rows:
-        print(f"ID: {row[0]}, Title: {row[1]}, Score: {row[2]}")
+    cursor.execute('SELECT * FROM lyrics')
+    for row in cursor.fetchall():
+        print(f"ID: {row[0]}, Title: {row[1]}, Lyrics: {row[2]}") 
 
 # Below is a function to view musical recordings from the musical_recordings table in the database
 # The cursor will execute the SQL query to select all data from the musical_recordings table
@@ -61,11 +71,8 @@ def view_musical_recordings():
     conn = sqlite3.connect('music_library.db')
     cursor = conn.cursor()
     cursor.execute('SELECT * FROM musical_recordings')
-    rows = cursor.fetchall()
-    conn.close()
-    
-    for row in rows:
-        print(f"ID: {row[0]}, Title: {row[1]}, Recording: {row[2]}, Checksum: {row[3]}")
+for row in cursor.fetchall():
+        print(f"ID: {row[0]}, Title: {row[1]}, Lyrics: {row[2]}") 
 
 # Below is a function to create lyrics in the lyrics table of the database
 # The function will insert the provided song title and lyrics into the lyrics table
@@ -74,10 +81,10 @@ def view_musical_recordings():
 def create_lyrics(song_title, lyrics):
     conn = sqlite3.connect('music_library.db')
     cursor = conn.cursor()
-    cursor.execute('INSERT INTO lyrics (song_title, lyrics, timestamp) VALUES (?, ?, ?)', (song_title, lyrics, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    cursor.execute('INSERT INTO lyrics (song_title, lyrics, timestamp) VALUES (?, ?, ?)', (song_title, lyrics, datetime.now))
     conn.commit()
-    conn.close()
-    print(f"Lyrics for '{song_title}' added successfully at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.") 
+    conn.close() 
+    print(f"Lyrics for '{song_title}' added successfully at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
 
 # Below is a function to add music scores in the music_scores table of the database
 # The function will insert the provided song title and score into the music_scores table
@@ -103,7 +110,7 @@ def add_musical_recording(song_title, recording):
     cursor.execute('INSERT INTO musical_recordings (song_title, recording, checksum) VALUES (?, ?, ?)', (song_title, recording, checksum))
     conn.commit()
     conn.close()
-    print(f"Musical recording for '{song_title}' added successfully at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
+    print(f"Musical recording for '{song_title}' created successfully at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.")
 
 # Below is a function to delete lyrics from the lyrics table in the database (admin only)
 # The function will delete the lyrics for the provided song title from the lyrics table
@@ -149,10 +156,12 @@ def delete_musical_recording(song_title):
 # If the user is authenticated, the user's role will be returned.
 # The user will be welcomed with a 'Welcome, user!' or 'Welcome, administrator!' message based on their role.
 def main():
+    
+    print("Welcome to the Music Library Management System")
     username = input("Enter username: ")
     password = input("Enter password: ")
     role = authenticate_user(username, password)
-
+    
     if role is None:
         print("Login Failed: Invalid username or password.")
         return
@@ -166,6 +175,7 @@ def main():
     if role == 'user':
         print("Welcome, user!")
         print("You can now view the Music Management System Library.")
+        print("Here are the available artifacts:")
         print("\nLyrics:")
         view_lyrics()
         print("\nMusic Scores:")
