@@ -235,7 +235,7 @@ def register_user():
     email = input("Enter email: ")
     username = input("Enter username: ")
     password = input("Enter password: ")
-    role = input("Enter role (user/admin): ")
+    role = input("Enter role (user/admin): ").lower()
 
     cursor.execute('SELECT id FROM accounts WHERE email = ?', (email,))
     if cursor.fetchone():
