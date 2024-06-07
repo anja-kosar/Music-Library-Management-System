@@ -6,6 +6,8 @@ Hello and welcome to the Music Library Management System. This application is de
 
 #### Records.py
 
+GitHub Repository: https://github.com/anja-kosar/Music-Library-Management-System 
+
 They will each be described in more detail below.
 The idea behind this project is to build a command-line application with a database in which musical recordings, lyrics and music scores can be stored. These artefacts can be viewed by regular users and administrator users, with administrators having CRUD function privileges. 
 The project was written in Python3 using Visual Studio Code. The design was created by following the UML Class Diagram submitted in week 3 design report. In the Python scripts, the database module SQLite3 was imported using the import function. SQLite3 is a self-contained, file-based SQL database which comes bundled with Python and can be used in any Python application without having to install any additional software. It operates by creating a file on the user’s computer, in which data can be accessed (Muller, D. 2020). The database contains various tables for storing artefacts, user accounts and modification history, as well as functions for generating a checksum to confirm the integrity of the artefacts, the ability to encrypt the artefact and date/time stamp function which will hold a record of creation, modification and removal of artefacts.
