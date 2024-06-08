@@ -7,6 +7,7 @@ Hello and welcome to the Music Library Management System. This application is de
 #### Records.py
 
 GitHub Repository: https://github.com/anja-kosar/Music-Library-Management-System 
+Project Video: https://www.youtube.com/watch?v=VL2OPbi28Cc 
 
 They will each be described in more detail below.
 The idea behind this project is to build a command-line application with a database in which musical recordings, lyrics and music scores can be stored. These artefacts can be viewed by regular users and administrator users, with administrators having CRUD function privileges. 
